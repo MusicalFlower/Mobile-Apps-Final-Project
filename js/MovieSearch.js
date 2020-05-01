@@ -8,8 +8,8 @@ var search_movie = function() {
 var cont = true;
 
 let workspace = document.getElementById("content");
-workspace.innerHTML = "";    
-    
+workspace.innerHTML = "";
+
 //Getting title, type, and year from HTML inputs
 let in_title = document.getElementById("in_title").value;
 let in_type = document.getElementById("in_type").value;
@@ -83,21 +83,14 @@ $.getJSON(api, function(data){
     let title = data.Search[i].Title;
     let year = data.Search[i].Year;
     let type = data.Search[i].Type;
-    
-    //let rdata = data.Released;
-    //let genre = data.Genre;
-    //let poster = data.Poster;
-    //let director = data.Director;
-    //let plot = data.Plot;
-    //let rated = data.Rated;
-    //let lang = data.Language;
-    //let country = data.Country;
-    
+    let id = data.Search[i].imdbID;
     
     let htitle = document.createElement('h3');
     text = document.createTextNode('Title: '+title);
     htitle.appendChild(text);
+    htitle.onclick = function() {movie_Info(id);};
     workspace.append(htitle);
+    
     
     let hyear = document.createElement('p');
     text = document.createTextNode('Year: '+year);
@@ -108,11 +101,6 @@ $.getJSON(api, function(data){
     text = document.createTextNode('Type: '+type);
     htype.appendChild(text);
     workspace.append(htype);
-    
-    /*let hplot = document.createElement('p');
-    text = document.createTextNode('Plot: '+plot);
-    hplot.appendChild(text);
-    workspace.append(hplot);*/
             
     i = i + 1;
     
@@ -121,4 +109,11 @@ $.getJSON(api, function(data){
 });
 }    
     
+}
+
+var movie_Info = function(id){
+    //Save the id of the movie in local storage to be accessed by next HTML page
+    window.localStorage.setItem("current_movie", id);
+    //Go to the HTML page that will display movie info of the movie with this id
+    window.location.href = "movie_info.html";
 }
