@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function(){
 var display_movie = function() {
     
     id = window.localStorage.getItem("current_movie");
+    user = window.localStorage.getItem("active_account")
     api = 'https://www.omdbapi.com/?i='+id+'&apikey=4e9f6bff';
     $.getJSON(api, function(data){
         
@@ -83,21 +84,20 @@ var display_movie = function() {
         workspace.append(hcount);
         
     });
-    
+
+    let in_list = false;
     //Get movie list
-     if (localStorage.getItem("list")){
-        console.log("Movie list exist");
-        //Get user accounts to search through usernames
-        accounts = JSON.parse(window.localStorage.getItem("accounts"));
-        i = 0;
-        while (i < accounts.length){
-            //Check if username exists
-            if (accounts[i].username == in_user){
-                //Inform user that the username input already exists
-                let herror = document.createElement('h3');
-                let text = document.createTextNode("Username already exists");
-                herror.appendChild(text);
-                workspace.append(herror);
+     if (localStorage.getItem("list_"+user)){
+        console.log("Movie list exists");
+        //Get movie to search through movies
+        list = JSON.parse(window.localStorage.getItem("list_"+user));
+        let i = 0;
+        while (i < list.length){
+            //Check if movie is already in list
+            if (list[i] == id){
+                //Movie exists, so create delete option button
+                in_list = true;
+                break;
             }
             i = i+1;
         }
@@ -106,12 +106,69 @@ var display_movie = function() {
     else{
         console.log("No list made");
     }
-    //Check if movie is part of list
-    //If part of list, make 'Delete from List' button
-        //Check if movie is favorited by user
-        //If favorite is true, make 'Unfavorite' button
-        //If favorite is false, make 'Favorite' button
-    //If not part of list, make 'Add to List' button
+    
+    //Make button add to list or delete from list based on in_list boolean
+
+    if(in_list == false){
+        //Make add button to append the new item to list
+        let workspace2 = document.getElementById("add_del_button");
+        workspace2.innerHTML = "";
+        let hbut = document.createElement('button');
+        text = document.createTextNode('Add to List');
+        hbut.appendChild(text);
+        workspace2.append(hbut);
+        hbut.className += 'btn btn-primary btn-xl';
+        hbut.type = 'submit';
+        hbut.onclick = function() {add_to_list();};
+    }
+    else{
+        //Movie is in list - delete button
+        let workspace2 = document.getElementById("add_del_button");
+        workspace2.innerHTML = "";
+        let hbut = document.createElement('button');
+        text = document.createTextNode('Delete from List');
+        hbut.appendChild(text);
+        workspace2.append(hbut);
+        hbut.className += 'btn btn-primary btn-xl';
+        hbut.type = 'submit';
+        hbut.onclick = function() {del_from_list();};
+    }
+    
+}
+
+var add_to_list = function() {
+    //The movie id will be the first in the list
+    let list = [];
+    let id_val = window.localStorage.getItem("current_movie");
+    let user = window.localStorage.getItem("active_account");
+    if (window.localStorage.getItem("list_"+user)){
+        list = JSON.parse(window.localStorage.getItem("list_"+user));
+    }
+    len = list.length;
+    list[len] = id_val;
+    window.localStorage.setItem('list_'+user, JSON.stringify(list));
+    //Go back to the search page
+    window.location.href = "search_page.html";
+}
+
+var del_from_list = function() {
+    //The movie id is removed from the list
+    let user = window.localStorage.getItem("active_account");
+    let list = window.localStorage.getItem("list_"+user);
+    let id_val = window.localStorage.getItem("current_movie");
+    //Find the movie to delete and delete it
+    let i = 0;
+    while (i < list.length){
+        if (list[i] == id_val){
+            //Remove list item
+            list.splice(i, 1);
+            break;
+        }
+        i = i + 1;
+    }
+    window.localStorage.setItem('list_'+user, JSON.stringify(list));
+    //Go back to the search page
+    window.location.href = "search_page.html";
 }
 
 

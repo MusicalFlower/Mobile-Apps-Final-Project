@@ -35,7 +35,7 @@ if (isNaN(in_year) || in_year.length != 4){
     
 if (cont == true) { //If there are no input errors
     
-let api = 'https://www.omdbapi.com/?s=';
+let api_in = 'https://www.omdbapi.com/?s=';
 let key = '&apikey=4e9f6bff';
 let stype = '';
 let syear = '';
@@ -51,7 +51,7 @@ if (in_year != ""){
 }
 
 //Finalize the API
-api = api+in_title+stype+syear+key;
+api = api_in+in_title+stype+syear+key;
 
 $.getJSON(api, function(data){
     
@@ -91,7 +91,6 @@ $.getJSON(api, function(data){
     htitle.onclick = function() {movie_Info(id);};
     workspace.append(htitle);
     
-    
     let hyear = document.createElement('p');
     text = document.createTextNode('Year: '+year);
     hyear.appendChild(text);
@@ -104,11 +103,81 @@ $.getJSON(api, function(data){
             
     i = i + 1;
     
-    }}
+    }
+    
+    //If more results are available, create button to print more results
+    if (i < results){
+        let hbut = document.createElement('button');
+        text = document.createTextNode('Load More Results');
+        hbut.appendChild(text);
+        workspace.append(hbut);
+        hbut.className += 'btn btn-primary btn-xl';
+        hbut.setAttribute('id', 'load_btn');
+        //hbut.type = 'submit';
+        let api2 = in_title+stype+syear;
+        hbut.onclick = function() {print_results(1, i, api_in, api2, key, results);};
+    }
+    
+    
+    }
 
 });
 }    
     
+}
+
+//For printing more results on button click
+var print_results = function(page, n, api1, api2, key, results){
+    //First have to delete button that got here
+    let old_btn = document.getElementById('load_btn');
+    old_btn.parentNode.removeChild(old_btn);
+    
+    //Getting more results
+    page = page + 1;
+    let workspace = document.getElementById("content");
+    api = api1+api2+'&page='+page+key;
+    let i = 0;
+    $.getJSON(api, function(data){
+        while(i < 10 && n < results){
+            
+            let title = data.Search[i].Title;
+            let year = data.Search[i].Year;
+            let type = data.Search[i].Type;
+            let id = data.Search[i].imdbID;
+
+            let htitle = document.createElement('h3');
+            text = document.createTextNode('Title: '+title);
+            htitle.appendChild(text);
+            htitle.onclick = function() {movie_Info(id);};
+            workspace.append(htitle);
+
+            let hyear = document.createElement('p');
+            text = document.createTextNode('Year: '+year);
+            hyear.appendChild(text);
+            workspace.append(hyear);
+
+            let htype = document.createElement('p');
+            text = document.createTextNode('Type: '+type);
+            htype.appendChild(text);
+            workspace.append(htype);
+            
+            i = i+1;
+            n = n+1;
+        }
+        
+        //If more results are available, create another button to print more results
+        if (n < results){
+            let hbut = document.createElement('button');
+            text = document.createTextNode('Load More Results');
+            hbut.appendChild(text);
+            workspace.append(hbut);
+            hbut.className += 'btn btn-primary btn-xl';
+            hbut.setAttribute('id', 'load_btn');
+            //hbut.type = 'submit';
+            hbut.onclick = function() {print_results(page, n, api_in, api2, key, results);};
+        }
+    
+    });
 }
 
 var movie_Info = function(id){
