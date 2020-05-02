@@ -4,12 +4,13 @@ document.addEventListener("DOMContentLoaded", function(){
     
     //Back button to go back to search page event handler
     document.getElementById('back').onclick = go_back;
+    document.getElementById('del').onclick = del_from_list;
 });
 
 var display_movie = function() {
     
     id = window.localStorage.getItem("current_movie");
-    user = window.localStorage.getItem("active_account");
+    user = window.localStorage.getItem("active_account")
     api = 'https://www.omdbapi.com/?i='+id+'&apikey=4e9f6bff';
     $.getJSON(api, function(data){
         
@@ -84,59 +85,10 @@ var display_movie = function() {
         workspace.append(hcount);
         
     });
-
-    let in_list = false;
-    //Get movie list
-     if (localStorage.getItem("list_"+user)){
-        console.log("Movie list exists");
-        //Get movie to search through movies
-        list = JSON.parse(window.localStorage.getItem("list_"+user));
-        let i = 0;
-        while (i < list.length){
-            //Check if movie is already in list
-            if (list[i] == id){
-                //Movie exists, so create delete option button
-                in_list = true;
-                break;
-            }
-            i = i+1;
-        }
-        
-    }
-    else{
-        console.log("No list made");
-    }
-    
-    //Make button add to list or delete from list based on in_list boolean
-
-    if(in_list == false){
-        //Make add button to append the new item to list
-        let workspace2 = document.getElementById("add_del_button");
-        workspace2.innerHTML = "";
-        let hbut = document.createElement('button');
-        text = document.createTextNode('Add to List');
-        hbut.appendChild(text);
-        workspace2.append(hbut);
-        hbut.className += 'btn btn-primary btn-xl';
-        hbut.type = 'submit';
-        hbut.onclick = function() {add_to_list();};
-    }
-    else{
-        //Movie is in list - delete button
-        let workspace2 = document.getElementById("add_del_button");
-        workspace2.innerHTML = "";
-        let hbut = document.createElement('button');
-        text = document.createTextNode('Delete from List');
-        hbut.appendChild(text);
-        workspace2.append(hbut);
-        hbut.className += 'btn btn-primary btn-xl';
-        hbut.type = 'submit';
-        hbut.onclick = function() {del_from_list();};
-    }
     
 }
 
-var add_to_list = function() {
+/*var add_to_favorite = function() {
     //The movie id will be the first in the list
     let list = [];
     let id_val = window.localStorage.getItem("current_movie");
@@ -148,13 +100,13 @@ var add_to_list = function() {
     list[len] = id_val;
     window.localStorage.setItem('list_'+user, JSON.stringify(list));
     //Go back to the search page
-    window.location.href = "search_page.html";
-}
+    window.location.href = "window.html";
+}*/
 
 var del_from_list = function() {
     //The movie id is removed from the list
     let user = window.localStorage.getItem("active_account");
-    let list = window.localStorage.getItem("list_"+user);
+    let list = JSON.parse(window.localStorage.getItem("list_"+user));
     let id_val = window.localStorage.getItem("current_movie");
     //Find the movie to delete and delete it
     let i = 0;
@@ -168,11 +120,11 @@ var del_from_list = function() {
     }
     window.localStorage.setItem('list_'+user, JSON.stringify(list));
     //Go back to the search page
-    window.location.href = "search_page.html";
+    window.location.href = "movie_list.html";
 }
 
 
 var go_back = function(){
     //Go to main search page
-    window.location.href = "search_page.html";
+    window.location.href = "movie_list.html";
 }
