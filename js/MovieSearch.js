@@ -116,8 +116,6 @@ $.getJSON(api, function(data){
         let api2 = in_title+stype+syear;
         hbut.onclick = function() {print_results(1, i, api_in, api2, key, results);};
     }
-    
-    
     }
 
 });
@@ -172,7 +170,7 @@ var print_results = function(page, n, api1, api2, key, results){
             workspace.append(hbut);
             hbut.className += 'btn btn-primary btn-xl';
             hbut.setAttribute('id', 'load_btn');
-            hbut.onclick = function() {print_results(page, n, api_in, api2, key, results);};
+            hbut.onclick = function() {print_results(page, n, api1, api2, key, results);};
         }
     
     });

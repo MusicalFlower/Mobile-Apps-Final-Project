@@ -9,9 +9,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
 var display_movie = function() {
     
-    id = window.localStorage.getItem("current_movie");
-    user = window.localStorage.getItem("active_account")
-    api = 'https://www.omdbapi.com/?i='+id+'&apikey=4e9f6bff';
+    let id = window.localStorage.getItem("current_movie");
+    let loc = window.localStorage.getItem("current_movie_loc");
+    let user = window.localStorage.getItem("active_account")
+    let api = 'https://www.omdbapi.com/?i='+id+'&apikey=4e9f6bff';
+    let fav_in = JSON.parse(window.localStorage.getItem("fav_"+user));
+    
+    let fav = fav_in[Number(loc)];
+
     $.getJSON(api, function(data){
         
         let workspace = document.getElementById("movie_info_display");
@@ -34,6 +39,14 @@ var display_movie = function() {
         htitle.appendChild(text);
         workspace.append(htitle);
         htitle.onclick = function() {movie_Info(id);};
+        
+        if (fav == 'true'){
+            //Saying the movie is a favorite if it is a favorite
+            let hfav = document.createElement('h4');
+            text = document.createTextNode('This is a favorite!');
+            hfav.appendChild(text);
+            workspace.append(hfav);
+        }
         
         let imgposter = document.createElement('img');
         imgposter.setAttribute("src", poster);
@@ -84,41 +97,73 @@ var display_movie = function() {
         hcount.appendChild(text);
         workspace.append(hcount);
         
+        //Favorite or unfavorite button
+        let workspace2 = document.getElementById("fav");
+        workspace2.innerHTML = "";
+        let hbut = document.createElement('button');
+        if(fav=='true'){
+            text = document.createTextNode('Unfavorite');
+            hbut.appendChild(text);
+            workspace2.append(hbut);
+            hbut.className += 'btn btn-primary btn-xl';
+            hbut.type = 'submit';
+            hbut.onclick = function() {del_from_favorite();};
+        }
+        else{
+            text = document.createTextNode('Favorite');
+            hbut.appendChild(text);
+            workspace2.append(hbut);
+            hbut.className += 'btn btn-primary btn-xl';
+            hbut.type = 'submit';
+            hbut.onclick = function() {add_to_favorite();};
+        }
+        
     });
     
 }
 
-/*var add_to_favorite = function() {
-    //The movie id will be the first in the list
-    let list = [];
-    let id_val = window.localStorage.getItem("current_movie");
+var add_to_favorite = function() {
+    //Turning favorite setting from false to true
+    let loc = localStorage.getItem("current_movie_loc");
     let user = window.localStorage.getItem("active_account");
-    if (window.localStorage.getItem("list_"+user)){
-        list = JSON.parse(window.localStorage.getItem("list_"+user));
-    }
-    len = list.length;
-    list[len] = id_val;
-    window.localStorage.setItem('list_'+user, JSON.stringify(list));
-    //Go back to the search page
-    window.location.href = "window.html";
-}*/
+    let fav = JSON.parse(window.localStorage.getItem("fav_"+user));
+    fav[Number(loc)] = 'true';
+    window.localStorage.setItem('fav_'+user, JSON.stringify(fav));
+    //Reload page
+    window.location.href = "movie_list_info.html";
+}
+
+var del_from_favorite = function() {
+    //Turning favorite setting from true to false
+    let loc = localStorage.getItem("current_movie_loc");
+    let user = window.localStorage.getItem("active_account");
+    let fav = JSON.parse(window.localStorage.getItem("fav_"+user));
+    console.log(fav);
+    fav[Number(loc)] = 'false';
+    window.localStorage.setItem('fav_'+user, JSON.stringify(fav));
+    //Reload page
+    window.location.href = "movie_list_info.html";
+}
 
 var del_from_list = function() {
     //The movie id is removed from the list
     let user = window.localStorage.getItem("active_account");
     let list = JSON.parse(window.localStorage.getItem("list_"+user));
     let id_val = window.localStorage.getItem("current_movie");
+    let fav = JSON.parse(window.localStorage.getItem("fav_"+user));
     //Find the movie to delete and delete it
     let i = 0;
     while (i < list.length){
         if (list[i] == id_val){
             //Remove list item
             list.splice(i, 1);
+            fav.splice(i,1);
             break;
         }
         i = i + 1;
     }
     window.localStorage.setItem('list_'+user, JSON.stringify(list));
+    window.localStorage.setItem('fav_'+user, JSON.stringify(fav));
     //Go back to the search page
     window.location.href = "movie_list.html";
 }

@@ -17,7 +17,7 @@ if(localStorage.getItem("list_"+user)){
     //Movie list exists, print movies
     //By default filter will be by order of movies added, regardless of favorites, so just list movies
     let list = JSON.parse(window.localStorage.getItem("list_"+user));
-    //let fav = JSON.parse(window.localStorage.getItem("fav_"+user));
+    let fav_in = JSON.parse(window.localStorage.getItem("fav_"+user));
     let api_in = 'https://www.omdbapi.com/?i=';
     let key = '&apikey=4e9f6bff';
 
@@ -27,8 +27,8 @@ if(localStorage.getItem("list_"+user)){
         
     //Forming API call
     api = api_in+list[i]+key;
-    let title_list = [];
-    let year_list = [];
+        
+    fav = fav_in[i];
 
     $.getJSON(api, function(data){
 
@@ -53,7 +53,7 @@ if(localStorage.getItem("list_"+user)){
         let htitle = document.createElement('h3');
         text = document.createTextNode('Title: '+title);
         htitle.appendChild(text);
-        htitle.onclick = function() {movie_Info(id);};
+        htitle.onclick = function() {movie_Info(id, i);};
         workspace.append(htitle);
 
         let hyear = document.createElement('p');
@@ -68,7 +68,12 @@ if(localStorage.getItem("list_"+user)){
             
         //Say if favorite
             
-        //HERE
+        if(fav == 'true'){
+            let hfav = document.createElement('p');
+            text = document.createTextNode('This is a favorite!');
+            hfav.appendChild(text);
+            workspace.append(hfav);
+        }
         
         }
 
@@ -78,9 +83,18 @@ if(localStorage.getItem("list_"+user)){
     
     }
         
-    //Make filter by showing only favorites button
-        
-    //HERE
+    //Make filter for showing only favorites button
+    let workspace2 = document.getElementById("filter");
+    workspace2.innerHTML = "";
+    let hbut = document.createElement('button');
+    text = document.createTextNode('Show Favorites Only');
+    hbut.appendChild(text);
+    workspace.append(hbut);
+    hbut.className += 'btn btn-primary btn-xl';
+    hbut.setAttribute('id', 'filter');
+    hbut.style.margin = "0 0 25px 0";
+    hbut.onclick = function() {filter_list();};
+
 }
 
 else{
@@ -150,7 +164,7 @@ $.getJSON(api, function(data){
     //If the API got a successful response
     else{
     
-        if (fav[i] == true){
+        if (fav[i] == 'true'){
         //Getting basic movie information and printing it to user
 
         let title = data.Title;
@@ -161,7 +175,7 @@ $.getJSON(api, function(data){
         let htitle = document.createElement('h3');
         text = document.createTextNode('Title: '+title);
         htitle.appendChild(text);
-        htitle.onclick = function() {movie_Info(id);};
+        htitle.onclick = function() {movie_Info(id, i);};
         workspace.append(htitle);
 
         let hyear = document.createElement('p');
@@ -173,17 +187,26 @@ $.getJSON(api, function(data){
         text = document.createTextNode('Type: '+type);
         htype.appendChild(text);
         workspace.append(htype);
-
-        i = i + 1;
     
     }}
     });
+    
+    i = i + 1;
 
 }
     
     //Making remove favorites filter button
     
-    //HERE
+    let workspace2 = document.getElementById("filter");
+    workspace2.innerHTML = "";
+    let hbut = document.createElement('button');
+    text = document.createTextNode('Show All Movies');
+    hbut.appendChild(text);
+    workspace.append(hbut);
+    hbut.className += 'btn btn-primary btn-xl';
+    hbut.setAttribute('id', 'filter');
+    hbut.style.margin = "0 0 25px 0";
+    hbut.onclick = function() {display_list();};
     
 }}
 
@@ -193,9 +216,10 @@ else{
 }
 }
 
-var movie_Info = function(id){
+var movie_Info = function(id, i){
     //Save the id of the movie in local storage to be accessed by next HTML page
     window.localStorage.setItem("current_movie", id);
+    window.localStorage.setItem("current_movie_loc", i);
     //Go to the HTML page that will display movie info of the movie with this id
     window.location.href = "movie_list_info.html";
 }
