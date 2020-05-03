@@ -86,21 +86,17 @@ var display_movie = function() {
     });
 
     let in_list = false;
-    let in_fav = 'false';
     //Get movie list
      if (localStorage.getItem("list_"+user)){
         console.log("Movie list exists");
         //Get movie to search through movies
         list = JSON.parse(window.localStorage.getItem("list_"+user));
-        fav = JSON.parse(window.localStorage.getItem("fav_"+user));
         let i = 0;
         while (i < list.length){
             //Check if movie is already in list
             if (list[i] == id){
                 //Movie exists, so create delete option button
-                //ONLY if it is not favorited
                 in_list = true;
-                in_fav = fav[i];
                 break;
             }
             i = i+1;
@@ -113,13 +109,6 @@ var display_movie = function() {
     
     //Make button add to list or delete from list based on in_list boolean
 
-    if(in_fav == 'true'){
-        //Message saying in favorites before delete
-        let workspace2 = document.getElementById("fav");
-        workspace2.innerHTML = "";
-        let hfav = document.createElement('h4');
-        text = document.createTextNode('This movie is a favorite!')
-    }
     if(in_list == false){
         //Make add button to append the new item to list
         let workspace2 = document.getElementById("add_del_button");
@@ -150,20 +139,14 @@ var display_movie = function() {
 var add_to_list = function() {
     //The movie id will be the first in the list
     let list = [];
-    let fav = [];
     let id_val = window.localStorage.getItem("current_movie");
     let user = window.localStorage.getItem("active_account");
     if (window.localStorage.getItem("list_"+user)){
         list = JSON.parse(window.localStorage.getItem("list_"+user));
     }
-    if (window.localStorage.getItem("fav_"+user)){
-        fav = JSON.parse(window.localStorage.getItem("fav_"+user));
-    }
     len = list.length;
     list[len] = id_val;
-    fav[Number(len)] = 'false';
     window.localStorage.setItem('list_'+user, JSON.stringify(list));
-    window.localStorage.setItem('fav_'+user, JSON.stringify(fav));
     //Go back to the search page
     window.location.href = "search_page.html";
 }
@@ -173,20 +156,17 @@ var del_from_list = function() {
     let user = window.localStorage.getItem("active_account");
     let list = JSON.parse(window.localStorage.getItem("list_"+user));
     let id_val = window.localStorage.getItem("current_movie");
-    let fav_val = JSON.parse(window.localStorage.getItem("fav_"+user));
     //Find the movie to delete and delete it
     let i = 0;
     while (i < list.length){
         if (list[i] == id_val){
             //Remove list item
             list.splice(i, 1);
-            fav.splice(i,1);
             break;
         }
         i = i + 1;
     }
     window.localStorage.setItem('list_'+user, JSON.stringify(list));
-    window.localStorage.setItem('fav_'+user, JSON.stringify(fav));
     //Go back to the search page
     window.location.href = "search_page.html";
 }

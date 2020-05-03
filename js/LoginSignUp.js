@@ -190,19 +190,10 @@ else{
 }
     
 if (cont2 == true) { //If there are no input errors (username and password found)
-    //Save username and password by appending to local storage
-    //Not a real database, just creating simulation
-    len = accounts.length;
-    accounts[len] = {
-        username: in_user,
-        password: in_pass,
-    }
-    
-    //Store the username
-    localStorage.setItem('accounts', JSON.stringify(accounts));
+    //Continue with newly active account
     
     //Set the active account to refer to in other pages
-    window.localStorage.setItem("active_account", len);
+    window.localStorage.setItem("active_account", ind);
     
     //Go to the movie search page
     window.location.href = "search_page.html";
